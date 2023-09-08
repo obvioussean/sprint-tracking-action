@@ -1,4 +1,4 @@
-import { CreateIssueInput, CreateIssuePayload, Issue, Repository } from '@octokit/graphql-schema';
+import { CreateIssueInput, CreateIssuePayload, Issue, Repository, UpdateIssueInput, UpdateIssuePayload } from '@octokit/graphql-schema';
 import { GraphQlResponse, RequestParameters } from '@octokit/graphql/dist-types/types';
 
 type graphql = <ResponseData>(query: string, parameters?: RequestParameters) => GraphQlResponse<ResponseData>;
@@ -46,8 +46,16 @@ export class IssueHierarchyBuilder {
             }
             name
           }
+          id
           number
           title
+          labels(first: 100) {
+            totalCount
+            nodes {
+              id
+              name
+            }
+          }
           trackedIssues (first:100) {
             totalCount
             nodes {
@@ -91,6 +99,57 @@ export class IssueHierarchyBuilder {
     });
 
     return result.repository.issueOrPullRequest;
+  }
+
+  private async createIssue(repositoryId: string, title: string, body: string): Promise<Issue> {
+    const query = `
+    mutation CreateIssue($input: CreateIssueInput!) {
+      createIssue(input: $input) {
+        issue {
+          id
+          number
+        }
+      }
+    }
+  `;
+
+    const result = await this.graphql<{ createIssue: CreateIssuePayload }>(
+      query,
+      {
+        input: {
+          repositoryId: repositoryId,
+          title,
+          body,
+        } as CreateIssueInput
+      }
+    );
+
+    return result.createIssue.issue!;
+  }
+
+  private async removeExpandTrackingLabel(issue: Issue): Promise<Issue> {
+    const query = `
+    mutation UpdateIssue($input: UpdateIssueInput!) {
+      updateIssue(input: $input) {
+        issue {
+          id
+          number
+        }
+      }
+    }
+  `;
+
+    const result = await this.graphql<{ updateIssue: UpdateIssuePayload }>(
+      query,
+      {
+        input: {
+          id: issue.id,
+          labelIds: issue.labels?.nodes?.filter(label => label?.name !== "expand-tracking").map(label => label!.id),
+        } as UpdateIssueInput
+      }
+    );
+
+    return result.updateIssue.issue!;
   }
 
   private async getTrackedIssues(owner: string, name: string, number: number): Promise<Issue[]> {
@@ -177,28 +236,12 @@ export class IssueHierarchyBuilder {
 
     const repository = await this.getRepository(parentIssue.repository.owner.login, parentIssue.repository.name);
 
-    const query = `
-    mutation CreateIssue($input: CreateIssueInput!) {
-      createIssue(input: $input) {
-        issue {
-          id
-          number
-        }
-      }
+    const trackingIssue = await this.createIssue(repository.id, `Tracking issue for ${parentIssue.number} - ${parentIssue.title}`, body);
+    if (trackingIssue != null) {
+      // remove the `expand-tracking` label
+      await this.removeExpandTrackingLabel(parentIssue);
     }
-  `;
 
-    const result = await this.graphql<{ createIssue: CreateIssuePayload }>(
-      query,
-      {
-        input: {
-          repositoryId: repository.id,
-          title: `Tracking issue for ${parentIssue.number} - ${parentIssue.title}`,
-          body,
-        } as CreateIssueInput
-      }
-    );
-
-    return result.createIssue.issue!;
+    return trackingIssue;
   }
 }

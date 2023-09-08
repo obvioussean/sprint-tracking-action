@@ -1,10 +1,11 @@
 {
   "name": "flatten-task-hierarchy-action",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Traverses the hierarchy of a task and creates an issue with a tasklist of all the tasks",
   "main": "app.js",
   "scripts": {
-    "build": "ncc build src/index.ts --out ./dist",
+    "build-action": "ncc build src/index.ts --out ./dist",
+    "build-app": "tsc",
     "dev": "tsc && env-cmd node dist/app.js",
     "app": "node dist/app.js",
     "app-env": "env-cmd node dist/app.js",

@@ -9726,8 +9726,16 @@ class IssueHierarchyBuilder {
             }
             name
           }
+          id
           number
           title
+          labels(first: 100) {
+            totalCount
+            nodes {
+              id
+              name
+            }
+          }
           trackedIssues (first:100) {
             totalCount
             nodes {
@@ -9769,6 +9777,45 @@ class IssueHierarchyBuilder {
             number,
         });
         return result.repository.issueOrPullRequest;
+    }
+    async createIssue(repositoryId, title, body) {
+        const query = `
+    mutation CreateIssue($input: CreateIssueInput!) {
+      createIssue(input: $input) {
+        issue {
+          id
+          number
+        }
+      }
+    }
+  `;
+        const result = await this.graphql(query, {
+            input: {
+                repositoryId: repositoryId,
+                title,
+                body,
+            }
+        });
+        return result.createIssue.issue;
+    }
+    async removeExpandTrackingLabel(issue) {
+        const query = `
+    mutation UpdateIssue($input: UpdateIssueInput!) {
+      updateIssue(input: $input) {
+        issue {
+          id
+          number
+        }
+      }
+    }
+  `;
+        const result = await this.graphql(query, {
+            input: {
+                id: issue.id,
+                labelIds: issue.labels?.nodes?.filter(label => label?.name !== "expand-tracking").map(label => label.id),
+            }
+        });
+        return result.updateIssue.issue;
     }
     async getTrackedIssues(owner, name, number) {
         const query = `
@@ -9843,24 +9890,12 @@ class IssueHierarchyBuilder {
         const taskListItems = issuesUrl.map(issueUrl => `- [ ] ${issueUrl}`).join("\n");
         const body = "```[tasklist]\n### Tasks\n" + taskListItems + "\n```";
         const repository = await this.getRepository(parentIssue.repository.owner.login, parentIssue.repository.name);
-        const query = `
-    mutation CreateIssue($input: CreateIssueInput!) {
-      createIssue(input: $input) {
-        issue {
-          id
-          number
+        const trackingIssue = await this.createIssue(repository.id, `Tracking issue for ${parentIssue.number} - ${parentIssue.title}`, body);
+        if (trackingIssue != null) {
+            // remove the `expand-tracking` label
+            await this.removeExpandTrackingLabel(parentIssue);
         }
-      }
-    }
-  `;
-        const result = await this.graphql(query, {
-            input: {
-                repositoryId: repository.id,
-                title: `Tracking issue for ${parentIssue.number} - ${parentIssue.title}`,
-                body,
-            }
-        });
-        return result.createIssue.issue;
+        return trackingIssue;
     }
 }
 exports.IssueHierarchyBuilder = IssueHierarchyBuilder;
