@@ -137,7 +137,7 @@ export class IssueHierarchyBuilder {
 
     const issue = result.repository.issueOrPullRequest;
 
-    const issues = [];
+    const issues: Issue[] = [];
 
     // GraphQL response will return an empty object if the item is not an issue
     if (!Object.hasOwn(issue, "number")) {
@@ -145,10 +145,10 @@ export class IssueHierarchyBuilder {
     }
 
     if (issue.trackedIssues.totalCount > 0) {
-      for (const trackedIssue of issue.trackedIssues.nodes) {
-        console.log(`Tracked issue: ${trackedIssue.number} - ${trackedIssue.title}`);
-        issues.push(trackedIssue);
-        const trackedIssues = await this.getTrackedIssues(trackedIssue.repository.owner.login, trackedIssue.repository.name, trackedIssue.number);
+      for (const trackedIssue of issue.trackedIssues.nodes!) {
+        console.log(`Tracked issue: ${trackedIssue!.number} - ${trackedIssue!.title}`);
+        issues.push(trackedIssue!);
+        const trackedIssues = await this.getTrackedIssues(trackedIssue!.repository.owner.login, trackedIssue!.repository.name, trackedIssue!.number);
         issues.push(...(trackedIssues));
       };
     }
@@ -199,6 +199,6 @@ export class IssueHierarchyBuilder {
       }
     );
 
-    return result.createIssue.issue;
+    return result.createIssue.issue!;
   }
 }
