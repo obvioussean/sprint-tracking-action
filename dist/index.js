@@ -9670,7 +9670,7 @@ async function run() {
     const repo = github.context.repo.repo;
     const number = github.context.payload.issue.number;
     const labels = github.context.payload.issue.labels.map((l) => l.name);
-    if (labels.any((l) => l === 'expand-tracking')) {
+    if (labels.filter((l) => l === 'expand-tracking').length > 0) {
         const ihb = new issues_1.IssueHierarchyBuilder(graphql);
         const issues = await ihb.getIssueHierarchy(owner, repo, number);
         const issue = await ihb.createTrackingIssue(issues);
