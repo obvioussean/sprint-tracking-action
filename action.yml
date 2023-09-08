@@ -1,7 +1,7 @@
 name: 'Expand Task List Hierarchy Actions'
 description: 'Traverses the task list hierarchy and creates a single issue with a task list for all the tasks'
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'
 branding:
   icon: alert-circle
