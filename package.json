@@ -1,8 +1,8 @@
 {
-  "name": "flatten-task-hierarchy-action",
-  "version": "0.0.4",
-  "description": "Traverses the hierarchy of a task and creates an issue with a tasklist of all the tasks",
-  "main": "app.js",
+  "name": "sprint-tracking-action",
+  "version": "0.0.1",
+  "description": "Finds all issues for the current iteration and creates a tracking issue to identify what has been committed to the sprint.",
+  "main": "dist/index.js",
   "scripts": {
     "build-action": "ncc build src/index.ts --out ./dist",
     "build-app": "tsc",
@@ -13,14 +13,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/obvioussean/flatten-task-hierarchy-action.git"
+    "url": "git+https://github.com/obvioussean/sprint-tracking-action.git"
   },
   "author": "obvioussean",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/obvioussean/flatten-task-hierarchy-action/issues"
+    "url": "https://github.com/obvioussean/sprint-tracking-action/issues"
   },
-  "homepage": "https://github.com/obvioussean/flatten-task-hierarchy-action#readme",
+  "homepage": "https://github.com/obvioussean/sprint-tracking-action#readme",
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@actions/github": "^5.1.1",

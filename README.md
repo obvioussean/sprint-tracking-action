@@ -1,1 +1,1 @@
-# flatten-task-hierarchy
+sprint-tracking-action

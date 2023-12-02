@@ -1,8 +1,12 @@
-name: 'Expand Task List Hierarchy Actions'
-description: 'Traverses the task list hierarchy and creates a single issue with a task list for all the tasks'
+name: 'Sprint Tracking Action'
+description: 'Finds all issues for the current iteration and creates a tracking issue to identify what has been committed to the sprint.' 
 runs:
   using: 'node16'
   main: 'dist/index.js'
 branding:
   icon: alert-circle
   color: green
+inputs:
+  start-of-sprint:
+    description: 'If true, creates the tracking issue for the sprint. If false, updates the tracking issues with current progress'
+    required: true

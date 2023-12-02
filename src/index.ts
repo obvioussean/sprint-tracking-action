@@ -1,7 +1,6 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import { IssueHierarchyBuilder } from './issues';
-import { Label } from '@octokit/graphql-schema';
+import { Project, Roadmap } from './roadmap';
 
 
 async function run(): Promise<void> {
@@ -10,14 +9,18 @@ async function run(): Promise<void> {
 
     const owner = github.context.repo.owner;
     const repo = github.context.repo.repo;
-    const number = github.context.payload.issue!.number;
 
-    const labels = github.context.payload.issue!.labels.map((l: Label) => l.name);
-    if (labels.filter((l: string) => l === 'expand-tracking').length > 0) {
-        const ihb = new IssueHierarchyBuilder(graphql);
-        const issues = await ihb.getIssueHierarchy(owner, repo, number);
-        const issue = await ihb.createTrackingIssue(issues);
-        core.info(JSON.stringify(issue));
+    const project = new Project(graphql, owner, 3898, "Sprint", "Stream");
+    await project.initialize();
+
+    const roadmap = new Roadmap(graphql, project);
+
+    const createTrackingIssues = core.getBooleanInput('start-of-sprint');
+
+    if (createTrackingIssues) {
+        await roadmap.createTrackingIssues(owner, repo);
+    } else {
+        await roadmap.updateTrackingIssues(owner, repo);
     }
 }
 

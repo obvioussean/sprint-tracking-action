@@ -1,5 +1,5 @@
 import { graphql } from '@octokit/graphql';
-import { IssueHierarchyBuilder } from './issues';
+import { Project, Roadmap } from './roadmap';
 
 const graphqlWithAuth = graphql.defaults({
     headers: {
@@ -8,8 +8,11 @@ const graphqlWithAuth = graphql.defaults({
 });
 
 (async () => {
-    const ihb = new IssueHierarchyBuilder(graphqlWithAuth);
-    const issues = await ihb.getIssueHierarchy("github", "security-center", 3404);
-    const issue = await ihb.createTrackingIssue(issues);
-    console.log(JSON.stringify(issue));
+    const project = new Project(graphqlWithAuth, "github", 3898, "Sprint", "Stream");
+    await project.initialize();
+
+    const roadmap = new Roadmap(graphqlWithAuth, project);
+
+    await roadmap.createTrackingIssues("github", "security-center");
+    await roadmap.updateTrackingIssues("github", "security-center");
 })();

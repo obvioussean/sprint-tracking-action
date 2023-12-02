@@ -1,16 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const graphql_1 = require("@octokit/graphql");
-const issues_1 = require("./issues");
+const roadmap_1 = require("./roadmap");
 const graphqlWithAuth = graphql_1.graphql.defaults({
     headers: {
         authorization: `token ${process.env.GITHUB_PASSWORD}`,
     },
 });
 (async () => {
-    const ihb = new issues_1.IssueHierarchyBuilder(graphqlWithAuth);
-    const issues = await ihb.getIssueHierarchy("github", "security-center", 3404);
-    const issue = await ihb.createTrackingIssue(issues);
-    console.log(JSON.stringify(issue));
+    const project = new roadmap_1.Project(graphqlWithAuth, "github", 3898, "Sprint", "Stream");
+    await project.initialize();
+    const roadmap = new roadmap_1.Roadmap(graphqlWithAuth, project);
+    await roadmap.createTrackingIssues("github", "security-center");
+    await roadmap.updateTrackingIssues("github", "security-center");
 })();
 //# sourceMappingURL=app.js.map
