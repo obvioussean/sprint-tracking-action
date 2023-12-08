@@ -9,4 +9,4 @@ branding:
 inputs:
   start-of-sprint:
     description: 'If true, creates the tracking issue for the sprint. If false, updates the tracking issues with current progress'
-    required: true
+    required: false
