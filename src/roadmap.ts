@@ -134,10 +134,6 @@ export class Project {
      * @returns all items on the project board
      */
     private async getItems(): Promise<RoadmapItem[]> {
-        if (this.itemsPromise) {
-            return this.itemsPromise;
-        }
-
         const query = `
             query ($owner: String!, $number: Int!, $iteration: String!, $stream: String!, $cursor: String) {
                 organization(login: $owner){
@@ -171,6 +167,12 @@ export class Project {
                                         title
                                         state
                                         url
+                                        labels(first:100) {
+                                            nodes {
+                                                id
+                                                name
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -180,9 +182,11 @@ export class Project {
             }
         `;
 
-        this.itemsPromise = this.pageItems(query);
+        const items = await this.pageItems(query);
 
-        return await this.itemsPromise;
+        return items.filter((i) => {
+            return !!i.content?.labels?.nodes?.every((l) => l!.name !== 'feature' && l!.name !== 'epic');
+        });
     }
 }
 
