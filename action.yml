@@ -1,7 +1,7 @@
 name: 'Sprint Tracking Action'
 description: 'Finds all issues for the current iteration and creates a tracking issue to identify what has been committed to the sprint.' 
 runs:
-  using: 'node16'
+  using: 'node18'
   main: 'dist/index.js'
 branding:
   icon: alert-circle
