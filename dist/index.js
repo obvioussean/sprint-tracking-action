@@ -15119,6 +15119,12 @@ class Project {
                                 name
                                 id
                                 configuration {
+                                    completedIterations {
+                                        id
+                                        startDate
+                                        title
+                                        duration
+                                    }
                                     iterations {
                                         id
                                         startDate
@@ -15158,7 +15164,7 @@ class Project {
         return this.getIterations().find((i) => i.title === this.getCurrentIterationName()).id;
     }
     getIterations() {
-        return this.roadmapProject.iterationField.configuration.iterations;
+        return [...this.roadmapProject.iterationField.configuration.completedIterations, ...this.roadmapProject.iterationField.configuration.iterations];
     }
     getStreams() {
         return this.roadmapProject.streamField.options;

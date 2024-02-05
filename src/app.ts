@@ -8,7 +8,7 @@ const graphqlWithAuth = graphql.defaults({
 });
 
 (async () => {
-    const project = new Project(graphqlWithAuth, "github", 3898, "Sprint", "Stream");
+    const project = new Project(graphqlWithAuth, "github", 3898, "Sprint", "Stream", "Sprint 74");
     await project.initialize();
 
     const roadmap = new Roadmap(graphqlWithAuth, project);

@@ -39,6 +39,12 @@ export class Project {
                                 name
                                 id
                                 configuration {
+                                    completedIterations {
+                                        id
+                                        startDate
+                                        title
+                                        duration
+                                    }
                                     iterations {
                                         id
                                         startDate
@@ -83,7 +89,7 @@ export class Project {
     }
 
     getIterations(): ProjectV2IterationFieldIteration[] {
-        return this.roadmapProject!.iterationField.configuration.iterations;
+        return [...this.roadmapProject!.iterationField.configuration.completedIterations, ...this.roadmapProject!.iterationField.configuration.iterations];
     }
 
     getStreams(): ProjectV2SingleSelectFieldOption[] {
