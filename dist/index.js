@@ -15065,7 +15065,8 @@ async function run() {
     const graphql = octoKit.graphql;
     const owner = github.context.repo.owner;
     const repo = github.context.repo.repo;
-    const project = new roadmap_1.Project(graphql, owner, 3898, "Sprint", "Stream");
+    const iterationTitle = core.getInput('iteration');
+    const project = new roadmap_1.Project(graphql, owner, 3898, "Sprint", "Stream", iterationTitle);
     await project.initialize();
     const roadmap = new roadmap_1.Roadmap(graphql, project);
     const createTrackingIssues = core.getBooleanInput('start-of-sprint');

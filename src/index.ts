@@ -37,8 +37,9 @@ async function run(): Promise<void> {
 
     const owner = github.context.repo.owner;
     const repo = github.context.repo.repo;
+    const iterationTitle = core.getInput('iteration');
 
-    const project = new Project(graphql, owner, 3898, "Sprint", "Stream");
+    const project = new Project(graphql, owner, 3898, "Sprint", "Stream", iterationTitle);
     await project.initialize();
 
     const roadmap = new Roadmap(graphql, project);
