@@ -15094,14 +15094,16 @@ class Project {
     project;
     iterationField;
     streamField;
+    iterationTitle;
     roadmapProject;
     itemsPromise;
-    constructor(graphql, organization, project, iterationField, streamField) {
+    constructor(graphql, organization, project, iterationField, streamField, iterationTitle) {
         this.graphql = graphql;
         this.organization = organization;
         this.project = project;
         this.iterationField = iterationField;
         this.streamField = streamField;
+        this.iterationTitle = iterationTitle;
     }
     async initialize() {
         const query = `
@@ -15149,7 +15151,10 @@ class Project {
         this.roadmapProject = result.organization.project;
     }
     getCurrentIterationName() {
-        return this.getIterations()[0].title;
+        return this.iterationTitle ?? this.getIterations()[0].title;
+    }
+    getCurrentIterationId() {
+        return this.getIterations().find((i) => i.title === this.getCurrentIterationName()).id;
     }
     getIterations() {
         return this.roadmapProject.iterationField.configuration.iterations;
@@ -15159,7 +15164,7 @@ class Project {
     }
     async getStreamItems(stream) {
         const items = await this.getItems();
-        const iterationId = this.roadmapProject.iterationField.configuration.iterations[0].id;
+        const iterationId = this.getCurrentIterationId();
         const streamId = this.roadmapProject.streamField.options.find((o) => o.name === stream).id;
         return items.filter((i) => {
             return i.stream?.optionId === streamId && i.iteration?.iterationId === iterationId;

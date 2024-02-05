@@ -10,3 +10,6 @@ inputs:
   start-of-sprint:
     description: 'If true, creates the tracking issue for the sprint. If false, updates the tracking issues with current progress'
     required: false
+  iteration:
+    description: 'The iteration to track'
+    required: false
