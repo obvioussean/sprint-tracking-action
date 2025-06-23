@@ -1,15 +1,24 @@
-name: 'Sprint Tracking Action'
-description: 'Finds all issues for the current iteration and creates a tracking issue to identify what has been committed to the sprint.' 
+name: "Sprint Tracking Action"
+description: "Finds all issues for the current iteration and creates a tracking issue to identify what has been committed to the sprint."
 runs:
-  using: 'node20'
-  main: 'dist/index.js'
+  using: "node20"
+  main: "dist/index.js"
 branding:
   icon: alert-circle
   color: green
 inputs:
   start-of-sprint:
-    description: 'If true, creates the tracking issue for the sprint. If false, updates the tracking issues with current progress'
+    description: "If true, creates the tracking issue for the sprint. If false, updates the tracking issues with current progress"
     required: false
+  project-id:
+    description: "The project id with the issues to track"
+    required: true
+  stream:
+    description: "The stream field to track"
+    required: true
   iteration:
-    description: 'The iteration to track'
-    required: false
+    description: "The iteration field to track"
+    required: true
+  tracking-issue-label:
+    description: "The label to use for the tracking issue"
+    required: true
