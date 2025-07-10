@@ -34947,25 +34947,38 @@ class Roadmap {
                 streamItemsMap.set(stream.name, items);
             }
         }
-        let body = "";
+        let pulledInBody = "";
+        let stillOpenBody = "";
         if (streamItemsMap.size > 0) {
             streamItemsMap.forEach((streamItems, stream) => {
-                let urls = "";
+                let addedUrls = "";
+                let stillOpenUrls = "";
                 streamItems.forEach((item) => {
                     const pulledIn = !trackingIssue.body.includes(item.content.url);
+                    const stillOpen = item.content.state === "OPEN";
                     if (pulledIn) {
-                        urls += `- ${item.content.url}\n`;
+                        addedUrls += `- ${item.content.url}\n`;
+                    }
+                    if (stillOpen) {
+                        stillOpenUrls += `- ${item.content.url}\n`;
                     }
                 });
-                if (urls.length > 0) {
-                    body += `### Added tasks for ${stream}\n${urls}\n`;
+                if (addedUrls.length > 0) {
+                    pulledInBody += `### Added tasks for ${stream}\n${addedUrls}\n`;
                 }
                 else {
-                    body += `### No new tasks added for ${stream}.\n`;
+                    pulledInBody += `### No new tasks added for ${stream}\n`;
+                }
+                if (stillOpenUrls.length > 0) {
+                    stillOpenBody += `### Still open tasks for ${stream}\n${stillOpenUrls}\n`;
+                }
+                else {
+                    stillOpenBody += `### All tasks completed for ${stream} :tada:\n`;
                 }
             });
         }
-        await this.issues.addIssueComment(trackingIssue, body);
+        await this.issues.addIssueComment(trackingIssue, pulledInBody);
+        await this.issues.addIssueComment(trackingIssue, stillOpenBody);
     }
     async findTrackingIssue(owner, repo, label) {
         const query = `
