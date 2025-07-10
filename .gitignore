@@ -129,3 +129,7 @@ out
 .pnp.*
 
 .env
+
+# dist
+dist/*
+!dist/index.js
